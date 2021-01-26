@@ -1,5 +1,3 @@
-'use strict';
-
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser'); // req.body
@@ -7,7 +5,7 @@ const cors = require('cors');
 const mongoose = require('mongoose'); //Database Configurations
 const uriUtil = require('mongodb-uri');  //Database Configurations
 let contacts = require('./data');
-const { request } = require('express');
+const contact = require('./api/contacts/routes/contacts');
 
 const mongodbUri =`mongodb+srv://Opman129:Opemiposegun1997@node-mongo.i8cmj.mongodb.net/virtualfair?retryWrites=true&w=majority`;
 const mongooseUri = uriUtil.formatMongoose(mongodbUri);
@@ -18,12 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(cors());
 
-app.use('/api/contacts', require('./api/contacts/routes/post_contact'));
-app.use('/api/contacts', require('./api/contacts/routes/get_contacts'));
-app.use('/api/contacts', require('./api/contacts/routes/get_contact'));
-app.use('/api/contacts', require('./api/contacts/routes/delete_contact'));
-app.use('/api/contacts', require('./api/contacts/routes/put_contact'));
-//METHODS - GET, POST, PUT, DELETE, PATCH
+app.use('/api/contacts', contact);
 
 //GET ENDPOINT
 app.get('/api/contacts', (req, res) => {
@@ -101,11 +94,10 @@ const hostname = 'localhost';
 const port = 3001;
 
 app.listen(port, hostname, () => {
-
-    mongoose.connect(mongooseUri, dbOptions, (err) => {
-        if (err) {
-            console.log(err);
-        }
-    });
-    console.log(`Server is running at http://${hostname}:${port}`);
+  mongoose.connect(mongooseUri, dbOptions, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+    .then(() => console.log("Connected to MongoDB.."));
 });
+console.log(`Server is running at http://${hostname}:${port}`);
